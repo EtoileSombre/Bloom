@@ -1,38 +1,50 @@
-// actions.js — interactions utilisateur
+// actions.js — interactions (cocher & ajouter)
 (function(ns){
-  const $goals = ns.$('#goals');
-  const $form  = ns.$('#goalForm');
-  const $title = ns.$('#goalTitle');
+  var $goals = ns.$('#goals');
+  var $form  = ns.$('#goalForm');
+  var $title = ns.$('#goalTitle');
 
-  // Clic sur les checkboxes
-  if($goals){
-    $goals.addEventListener('click',(e)=>{
-      const card = e.target.closest('.card'); if(!card) return;
-      if(e.target.matches('.toggle')){
-        const id = card.dataset.id;
-        const logs = ns.storage.get(ns.K_LOGS,{});
-        const k = ns.todayISO();
-        const set = new Set(logs[k]||[]);
-        e.target.checked ? set.add(id) : set.delete(id);
-        logs[k] = [...set];
+  // Clic sur les cases à cocher
+  if ($goals){
+    $goals.addEventListener('click', function(e){
+      var card = e.target.closest('.card'); if (!card) return;
+      if (e.target.matches('.toggle')){
+        var id = card.getAttribute('data-id');
+        var logs = ns.storage.get(ns.K_LOGS, {});
+        var k = ns.todayISO();
+        var set = new Set(logs[k] || []);
+        if (e.target.checked) set.add(id); else set.delete(id);
+        logs[k] = Array.from(set);
         ns.storage.set(ns.K_LOGS, logs);
+
+        // annonce a11y (facultatif)
+        var live = document.getElementById('live');
+        if (live) live.textContent = e.target.checked ? 'Objectif coché pour aujourd’hui.' : 'Objectif décoché pour aujourd’hui.';
+
         ns.render();
       }
     });
   }
 
-  // Soumission du formulaire
-  if($form){
-    $form.addEventListener('submit',(e)=>{
+  // Ajout d’un objectif
+  if ($form){
+    $form.addEventListener('submit', function(e){
       e.preventDefault();
-      const fd = new FormData($form);
-      const title = String(fd.get('title')||'').trim();
-      const icon  = String(fd.get('icon')||'🌱');
-      if(!title) return;
-      const goals = ns.storage.get(ns.K_GOALS, []);
-      goals.push({id:crypto.randomUUID(), title, icon, createdAt:Date.now(), streak:0});
+      var fd = new FormData($form);
+      var title = String(fd.get('title') || '').trim();
+      var icon  = String(fd.get('icon')  || '🌱');
+      if (!title) return;
+
+      var goals = ns.storage.get(ns.K_GOALS, []);
+      goals.push({ id: crypto.randomUUID(), title: title, icon: icon, createdAt: Date.now() });
       ns.storage.set(ns.K_GOALS, goals);
-      $title.value='';
+
+      if ($title) $title.value = '';
+
+      // annonce a11y (facultatif)
+      var live = document.getElementById('live');
+      if (live) live.textContent = 'Objectif ajouté.';
+
       ns.render();
     });
   }
