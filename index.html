@@ -3,37 +3,44 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MiniLearn Bloom · Carnet de progression</title>
+  <title>MiniLearn Bloom</title>
 
+  <!-- Feuille de style -->
   <link rel="stylesheet" href="assets/css/style.css" />
-  <link rel="manifest" href="manifest.webmanifest" />
-  <meta name="theme-color" content="#8b5cf6" />
 </head>
 <body>
+
 <header class="site-header container">
-  <a class="logo" href="#"> 🍒 Bloom</a>
+  <a class="logo" href="#">🍒 Bloom</a>
+
   <nav class="actions">
     <button id="btnExport" class="btn ghost">Exporter</button>
     <label class="btn ghost" style="cursor:pointer">
       Importer <input id="fileImport" type="file" accept="application/json" hidden>
     </label>
-    <button id="themeToggle" class="btn ghost" aria-pressed="false" aria-label="Basculer le thème">🌓</button>
+    <button id="themeToggle" class="btn ghost" aria-pressed="false" aria-label="Changer le thème">🌓</button>
   </nav>
 </header>
 
 <main class="container">
   <section class="hero">
-    <h1>Fais pousser tes habitudes.</h1>
-    <p class="muted">Ajoute des objectifs, coche-les chaque jour, et regarde ton jardin grandir.</p>
+    <h1>Fais pousser tes habitudes</h1>
+    <p class="muted">Ajoute un objectif, coche-le chaque jour.</p>
 
-    <form id="goalForm" class="inline-form" aria-label="Ajouter un objectif">
+    <form id="goalForm" class="inline-form">
       <label class="sr-only" for="goalTitle">Nouvel objectif</label>
       <input id="goalTitle" name="title" placeholder="Ex : 10 min d’anglais" autocomplete="off" />
+
       <label class="sr-only" for="goalIcon">Icône</label>
       <select id="goalIcon" name="icon" aria-label="Icône">
-        <option>🌱</option><option>📚</option><option>🏃‍♀️</option>
-        <option>🧘</option><option>💧</option><option>🍎</option>
+        <option>🌱</option>
+        <option>📚</option>
+        <option>🏃‍♀️</option>
+        <option>🧘</option>
+        <option>💧</option>
+        <option>🍎</option>
       </select>
+
       <button class="btn" type="submit">Ajouter</button>
     </form>
   </section>
@@ -47,16 +54,17 @@
     <h2 id="progressTitle" class="sr-only">Progression</h2>
     <div id="gardenView" class="garden-view">🌱 0%</div>
     <div class="progress-wrap" aria-hidden="true">
-      <div id="progressBar" class="progress-bar" style="width:0%"></div>
+      <div id="progressBar" class="progress-bar"></div>
     </div>
     <p id="badgeInfo" class="muted">Aucun badge pour l’instant.</p>
   </section>
 </main>
 
 <footer class="site-footer container">
-  <small class="muted">Made with ❤️ — MiniLearn Bloom</small>
+  <small class="muted">MiniLearn Bloom — version débutant</small>
 </footer>
 
-<script type="module" src="assets/js/app.js"></script>
+<!-- IMPORTANT : le script est chargé à la fin, après le HTML -->
+<script src="assets/js/script.js"></script>
 </body>
 </html>
