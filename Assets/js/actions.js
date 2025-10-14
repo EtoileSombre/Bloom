@@ -1,32 +1,56 @@
-// actions.js — interactions (cocher & ajouter)
+// actions.js — interactions (cocher, ajouter, supprimer)
 (function(ns){
   var $goals = ns.$('#goals');
   var $form  = ns.$('#goalForm');
   var $title = ns.$('#goalTitle');
 
-  // Clic sur les cases à cocher
+  function announce(msg){
+    var live = document.getElementById('live');
+    if (live) live.textContent = msg;
+  }
+
+  // Supprime un objectif et purge les logs sur toutes les dates
+  function deleteGoal(id){
+    var goals = ns.storage.get(ns.K_GOALS, []).filter(function(g){ return g.id !== id; });
+    ns.storage.set(ns.K_GOALS, goals);
+
+    var logs = ns.storage.get(ns.K_LOGS, {});
+    Object.keys(logs).forEach(function(day){
+      logs[day] = (logs[day]||[]).filter(function(x){ return x !== id; });
+      if (!logs[day].length) delete logs[day];
+    });
+    ns.storage.set(ns.K_LOGS, logs);
+  }
+
   if ($goals){
     $goals.addEventListener('click', function(e){
       var card = e.target.closest('.card'); if (!card) return;
+      var id = card.getAttribute('data-id');
+
+      // Cocher / décocher
       if (e.target.matches('.toggle')){
-        var id = card.getAttribute('data-id');
         var logs = ns.storage.get(ns.K_LOGS, {});
         var k = ns.todayISO();
         var set = new Set(logs[k] || []);
-        if (e.target.checked) set.add(id); else set.delete(id);
+        if (e.target.checked) { set.add(id); announce('Objectif coché pour aujourd’hui.'); }
+        else { set.delete(id); announce('Objectif décoché pour aujourd’hui.'); }
         logs[k] = Array.from(set);
         ns.storage.set(ns.K_LOGS, logs);
-
-        // annonce a11y (facultatif)
-        var live = document.getElementById('live');
-        if (live) live.textContent = e.target.checked ? 'Objectif coché pour aujourd’hui.' : 'Objectif décoché pour aujourd’hui.';
-
         ns.render();
+        return;
+      }
+
+      // Supprimer
+      if (e.target.matches('.del')){
+        if (!confirm('Supprimer cet objectif ?')) return;
+        deleteGoal(id);
+        announce('Objectif supprimé.');
+        ns.render();
+        return;
       }
     });
   }
 
-  // Ajout d’un objectif
   if ($form){
     $form.addEventListener('submit', function(e){
       e.preventDefault();
@@ -40,11 +64,7 @@
       ns.storage.set(ns.K_GOALS, goals);
 
       if ($title) $title.value = '';
-
-      // annonce a11y (facultatif)
-      var live = document.getElementById('live');
-      if (live) live.textContent = 'Objectif ajouté.';
-
+      announce('Objectif ajouté.');
       ns.render();
     });
   }

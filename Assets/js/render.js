@@ -1,25 +1,18 @@
-// render.js — affichage principal (robuste, sans planter si un ID manque)
+// render.js — affichage principal (avec bouton supprimer)
 (function(ns){
   var $goals  = ns.$('#goals');
   var $garden = ns.$('#gardenView');
   var $bar    = ns.$('#progressBar');
   var $badge  = ns.$('#badgeInfo');
 
-  // Calcule le streak consécutif (en jours) pour un objectif donné à partir des logs
   function computeStreak(goalId, logs) {
-    // On compte à rebours à partir d’aujourd’hui (inclus si coché)
     var streak = 0;
-    var d = new Date(ns.todayISO()); // à minuit
+    var d = new Date(ns.todayISO());
     for (;;) {
       var iso = d.toISOString().slice(0,10);
       var arr = logs[iso] || [];
-      if (arr.indexOf(goalId) !== -1) {
-        streak++;
-        // recule d'un jour
-        d.setDate(d.getDate() - 1);
-      } else {
-        break;
-      }
+      if (arr.indexOf(goalId) !== -1) { streak++; d.setDate(d.getDate() - 1); }
+      else break;
     }
     return streak;
   }
@@ -30,7 +23,6 @@
     var today = ns.todayISO();
     var todaySet = new Set(logs[today] || []);
 
-    // 1) Liste
     if ($goals) {
       if (!goals.length) {
         $goals.innerHTML = '<div class="card"><p class="muted">Ajoute ton premier objectif ✨</p></div>';
@@ -39,7 +31,7 @@
         for (var i=0;i<goals.length;i++){
           var g = goals[i];
           var checked = todaySet.has(g.id) ? 'checked' : '';
-          var streak  = computeStreak(g.id, logs); // calcul à la volée
+          var streak  = computeStreak(g.id, logs);
           html += ''
             + '<article class="card" data-id="'+g.id+'" role="listitem">'
             + '  <div class="row">'
@@ -48,15 +40,17 @@
             + '      <span style="font-size:1.2rem">'+g.icon+'</span>'
             + '      <strong>'+g.title+'</strong>'
             + '    </div>'
-            + '    <span class="badge" aria-label="Série de jours consécutifs">🔥 '+streak+'</span>'
+            + '    <div style="display:flex;gap:.4rem">'
+            + '      <button type="button" class="btn ghost del" aria-label="Supprimer l’objectif">🗑️</button>'
+            + '    </div>'
             + '  </div>'
+            + '  <div class="muted" aria-label="Série de jours consécutifs">🔥 '+streak+'</div>'
             + '</article>';
         }
         $goals.innerHTML = html;
       }
     }
 
-    // 2) Progression du jour + emoji plante
     var percent = goals.length ? Math.round((todaySet.size / goals.length) * 100) : 0;
     if ($bar)    $bar.style.width = percent + '%';
     if ($garden) {
@@ -64,13 +58,9 @@
       $garden.textContent = plant + ' ' + percent + '%';
     }
 
-    // 3) Badge du jour (simple et visible)
     if ($badge) {
-      // si 100% aujourd’hui → badge visible
-      if (percent === 100) {
-        $badge.textContent = '🏅 Tout est fait aujourd’hui !';
-      } else {
-        // ou si au moins un objectif a une série ≥ 7 jours
+      if (percent === 100) $badge.textContent = '🏅 Tout est fait aujourd’hui !';
+      else {
         var has7 = goals.some(function(g){ return computeStreak(g.id, logs) >= 7; });
         $badge.textContent = has7 ? '🏅 Badge “Constante” : 7 jours !' : 'Aucun badge pour l’instant.';
       }
