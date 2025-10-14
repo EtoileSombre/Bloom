@@ -1,70 +1,75 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MiniLearn Bloom</title>
-
-  <!-- Feuille de style -->
-  <link rel="stylesheet" href="assets/css/style.css" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MiniLearn Bloom · Carnet</title>
+<link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
+<a class="sr-only" href="#main">Aller au contenu</a>
+
 
 <header class="site-header container">
-  <a class="logo" href="#">🍒 Bloom</a>
-
-  <nav class="actions">
-    <button id="btnExport" class="btn ghost">Exporter</button>
-    <label class="btn ghost" style="cursor:pointer">
-      Importer <input id="fileImport" type="file" accept="application/json" hidden>
-    </label>
-    <button id="themeToggle" class="btn ghost" aria-pressed="false" aria-label="Changer le thème">🌓</button>
-  </nav>
+<a class="logo" href="#">🍒 Bloom</a>
+<nav class="actions">
+<button id="btnExport" class="btn ghost">Exporter</button>
+<label class="btn ghost" style="cursor:pointer">
+Importer <input id="fileImport" type="file" accept="application/json" hidden>
+</label>
+<button id="themeToggle" class="btn ghost" aria-pressed="false" aria-label="Basculer le thème">🌓</button>
+</nav>
 </header>
 
-<main class="container">
-  <section class="hero">
-    <h1>Fais pousser tes habitudes</h1>
-    <p class="muted">Ajoute un objectif, coche-le chaque jour.</p>
 
-    <form id="goalForm" class="inline-form">
-      <label class="sr-only" for="goalTitle">Nouvel objectif</label>
-      <input id="goalTitle" name="title" placeholder="Ex : 10 min d’anglais" autocomplete="off" />
+<main id="main" class="container">
+<section class="hero">
+<h1>Fais pousser tes habitudes.</h1>
+<p class="muted">Ajoute des objectifs, coche-les chaque jour.</p>
 
-      <label class="sr-only" for="goalIcon">Icône</label>
-      <select id="goalIcon" name="icon" aria-label="Icône">
-        <option>🌱</option>
-        <option>📚</option>
-        <option>🏃‍♀️</option>
-        <option>🧘</option>
-        <option>💧</option>
-        <option>🍎</option>
-      </select>
 
-      <button class="btn" type="submit">Ajouter</button>
-    </form>
-  </section>
+<form id="goalForm" class="inline-form" aria-label="Ajouter un objectif">
+<label class="sr-only" for="goalTitle">Nouvel objectif</label>
+<input id="goalTitle" name="title" placeholder="Ex. 10 min d’anglais" required />
+<select id="goalIcon" aria-label="Icône">
+<option>🌱</option><option>📚</option><option>💧</option><option>🏃‍♀️</option>
+</select>
+<button class="btn" type="submit">Ajouter</button>
+</form>
+</section>
 
-  <section aria-labelledby="goalsTitle">
-    <h2 id="goalsTitle" class="sr-only">Objectifs</h2>
-    <div id="goals" class="grid" role="list"></div>
-  </section>
 
-  <section class="garden" aria-labelledby="progressTitle">
-    <h2 id="progressTitle" class="sr-only">Progression</h2>
-    <div id="gardenView" class="garden-view">🌱 0%</div>
-    <div class="progress-wrap" aria-hidden="true">
-      <div id="progressBar" class="progress-bar"></div>
-    </div>
-    <p id="badgeInfo" class="muted">Aucun badge pour l’instant.</p>
-  </section>
+<!-- Liste des objectifs -->
+<section aria-label="Objectifs">
+<div id="goals" class="grid" role="list"></div>
+</section>
+
+
+<!-- Progression / Jardin -->
+<section class="garden">
+<div id="gardenView" class="garden-view" aria-live="polite">🌱 0%</div>
+<div class="progress-wrap" aria-hidden="true">
+<div id="progressBar" class="progress-bar" style="width:0%"></div>
+</div>
+<p id="badgeInfo" class="muted">Aucun badge pour l’instant.</p>
+</section>
+
+
+<!-- Zone d’annonce pour lecteurs d’écran -->
+<div id="live" class="sr-only" aria-live="polite"></div>
 </main>
 
+
 <footer class="site-footer container">
-  <small class="muted">MiniLearn Bloom — version débutant</small>
+<small class="muted">MiniLearn Bloom</small>
 </footer>
 
-<!-- IMPORTANT : le script est chargé à la fin, après le HTML -->
-<script src="assets/js/script.js"></script>
+
+<!-- JS fichiers -->
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/theme.js"></script>
+<script src="assets/js/render.js"></script>
+<script src="assets/js/actions.js"></script>
+<script src="assets/js/main.js"></script>
 </body>
 </html>
