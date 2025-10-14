@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniLearn Bloom - Suivi d'habitudes</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🌸 MiniLearn Bloom</h1>
+        <p class="subtitle">Cultivez vos habitudes, voyez votre jardin fleurir</p>
+        <button id="theme-toggle" class="theme-btn" aria-label="Basculer le thème">
+            <span class="theme-icon">🌙</span>
+        </button>
+    </header>
+
+    <main>
+        <!-- Section Jardin -->
+        <section class="garden-section">
+            <h2>Votre Jardin 🌱</h2>
+            <div id="garden" class="garden">
+                <div class="garden-message">Ajoutez des objectifs pour faire pousser votre jardin!</div>
+            </div>
+            <div class="garden-stats">
+                <div class="stat">
+                    <span class="stat-label">Plantes:</span>
+                    <span id="plants-count">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Taux de complétion:</span>
+                    <span id="completion-rate">0%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Badges -->
+        <section class="badges-section">
+            <h2>Badges de Constance 🏆</h2>
+            <div id="badges-container" class="badges-grid">
+                <div class="badge locked" data-badge="beginner">
+                    <span class="badge-icon">🌱</span>
+                    <span class="badge-name">Débutant</span>
+                    <span class="badge-desc">3 jours consécutifs</span>
+                </div>
+                <div class="badge locked" data-badge="consistent">
+                    <span class="badge-icon">🌿</span>
+                    <span class="badge-name">Constant</span>
+                    <span class="badge-desc">7 jours consécutifs</span>
+                </div>
+                <div class="badge locked" data-badge="dedicated">
+                    <span class="badge-icon">🌳</span>
+                    <span class="badge-name">Dévoué</span>
+                    <span class="badge-desc">14 jours consécutifs</span>
+                </div>
+                <div class="badge locked" data-badge="master">
+                    <span class="badge-icon">🌸</span>
+                    <span class="badge-name">Maître</span>
+                    <span class="badge-desc">30 jours consécutifs</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Objectifs -->
+        <section class="habits-section">
+            <h2>Mes Objectifs 📋</h2>
+            
+            <div class="add-habit-form">
+                <input 
+                    type="text" 
+                    id="habit-input" 
+                    placeholder="Nouvel objectif (ex: Lire 30 minutes)"
+                    maxlength="100"
+                >
+                <button id="add-habit-btn" class="btn-primary">Ajouter</button>
+            </div>
+
+            <div id="habits-list" class="habits-list">
+                <p class="empty-message">Aucun objectif pour le moment. Ajoutez-en un!</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>MiniLearn Bloom - Projet DWWM © 2024</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
