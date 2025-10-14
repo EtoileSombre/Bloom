@@ -1,0 +1,31 @@
+:root {
+  --bg:#0f1216; --fg:#e9edf3; --muted:#9aa3b2;
+  --card:#151a21; --ring:#263043; --brand:#8b5cf6; --accent:#22c55e;
+  --radius:.9rem; --shadow: 0 12px 30px rgba(0,0,0,.25);
+}
+:root.light { --bg:#f7f8fb; --fg:#1f2430; --muted:#6b7280; --card:#fff; --ring:#e6e8ee; }
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,Segoe UI,Roboto,Arial}
+.container{width:min(1100px,100% - 2rem);margin-inline:auto;padding:1.5rem 0}
+
+.site-header,.site-footer{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.logo{font-weight:800;text-decoration:none;color:var(--fg)}
+.btn{background:var(--brand);color:#fff;border:none;padding:.6rem .9rem;border-radius:.7rem;box-shadow:var(--shadow);cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid var(--ring);color:var(--fg)}
+
+.inline-form{display:flex;gap:.5rem;flex-wrap:wrap}
+.inline-form input,.inline-form select{padding:.6rem .8rem;border:1px solid var(--ring);background:var(--card);color:var(--fg);border-radius:.7rem}
+.muted{color:var(--muted)} .hero{padding:.5rem 0 1.2rem}
+
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.card{background:var(--card);border:1px solid var(--ring);border-radius:var(--radius);padding:1rem;display:flex;flex-direction:column;gap:.6rem;box-shadow:var(--shadow)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
+.badge{display:inline-flex;gap:.3rem;font-size:.8rem;border:1px solid var(--ring);border-radius:.6rem;padding:.2rem .5rem;color:var(--muted)}
+
+.garden{margin-top:1.2rem}
+.garden-view{min-height:90px;display:flex;align-items:center;justify-content:center;font-size:clamp(28px,6vw,44px);border:1px dashed var(--ring);border-radius:var(--radius);padding:.6rem;background:linear-gradient(180deg,rgba(34,197,94,.10),transparent)}
+.progress-wrap{height:10px;background:var(--ring);border-radius:999px;margin:.7rem 0;overflow:hidden}
+.progress-bar{height:100%;background:var(--accent);width:0%;transition:width .4s ease}
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
