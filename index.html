@@ -4,45 +4,59 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MiniLearn Bloom · Carnet de progression</title>
+
   <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#8b5cf6" />
 </head>
 <body>
 <header class="site-header container">
-  <a class="logo" href="#">🌸 Bloom</a>
-  <button id="themeToggle" class="btn ghost" aria-pressed="false" aria-label="Basculer le thème">🌓</button>
+  <a class="logo" href="#"> 🍒 Bloom</a>
+  <nav class="actions">
+    <button id="btnExport" class="btn ghost">Exporter</button>
+    <label class="btn ghost" style="cursor:pointer">
+      Importer <input id="fileImport" type="file" accept="application/json" hidden>
+    </label>
+    <button id="themeToggle" class="btn ghost" aria-pressed="false" aria-label="Basculer le thème">🌓</button>
+  </nav>
 </header>
 
 <main class="container">
   <section class="hero">
     <h1>Fais pousser tes habitudes.</h1>
     <p class="muted">Ajoute des objectifs, coche-les chaque jour, et regarde ton jardin grandir.</p>
+
     <form id="goalForm" class="inline-form" aria-label="Ajouter un objectif">
       <label class="sr-only" for="goalTitle">Nouvel objectif</label>
-      <input id="goalTitle" name="title" placeholder="Ex : 10 min d’anglais" required />
-      <select name="icon" aria-label="Icône">
-        <option>🌱</option><option>📚</option><option>🏃‍♀️</option><option>🧘‍♀️</option><option>🎧</option>
+      <input id="goalTitle" name="title" placeholder="Ex : 10 min d’anglais" autocomplete="off" />
+      <label class="sr-only" for="goalIcon">Icône</label>
+      <select id="goalIcon" name="icon" aria-label="Icône">
+        <option>🌱</option><option>📚</option><option>🏃‍♀️</option>
+        <option>🧘</option><option>💧</option><option>🍎</option>
       </select>
-      <button class="btn">+ Ajouter</button>
+      <button class="btn" type="submit">Ajouter</button>
     </form>
   </section>
 
-  <section>
-    <h2>Mes objectifs</h2>
+  <section aria-labelledby="goalsTitle">
+    <h2 id="goalsTitle" class="sr-only">Objectifs</h2>
     <div id="goals" class="grid" role="list"></div>
   </section>
 
-  <section class="garden">
-    <h2>Mon jardin</h2>
-    <div id="gardenView" class="garden-view" aria-live="polite">🌱 0%</div>
-    <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <section class="garden" aria-labelledby="progressTitle">
+    <h2 id="progressTitle" class="sr-only">Progression</h2>
+    <div id="gardenView" class="garden-view">🌱 0%</div>
+    <div class="progress-wrap" aria-hidden="true">
+      <div id="progressBar" class="progress-bar" style="width:0%"></div>
+    </div>
     <p id="badgeInfo" class="muted">Aucun badge pour l’instant.</p>
   </section>
 </main>
 
 <footer class="site-footer container">
-  <small>MiniLearn Bloom — 100% local, aucune donnée envoyée.</small>
+  <small class="muted">Made with ❤️ — MiniLearn Bloom</small>
 </footer>
 
-<script src="assets/js/app.js" type="module"></script>
+<script type="module" src="assets/js/app.js"></script>
 </body>
 </html>
