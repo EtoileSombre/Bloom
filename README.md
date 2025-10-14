@@ -1,4 +1,4 @@
-# MiniLearn_Bloom# MiniLearn Bloom 🌸
+# Bloom 🌸
 
 Application web front-end de suivi d'habitudes réalisée dans le cadre du TP DWWM.
 
