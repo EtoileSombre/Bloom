@@ -1,69 +1,111 @@
-// render.js — affichage principal (avec bouton supprimer)
+﻿// render.js 
 (function(ns){
   var $goals  = ns.$('#goals');
   var $garden = ns.$('#gardenView');
   var $bar    = ns.$('#progressBar');
   var $badge  = ns.$('#badgeInfo');
 
-  function computeStreak(goalId, logs) {
-    var streak = 0;
-    var d = new Date(ns.todayISO());
-    for (;;) {
-      var iso = d.toISOString().slice(0,10);
-      var arr = logs[iso] || [];
-      if (arr.indexOf(goalId) !== -1) { streak++; d.setDate(d.getDate() - 1); }
-      else break;
+  // Cree un element DOM avec des proprietes
+  function el(tag, props, children) {
+    var node = document.createElement(tag);
+    if (props) {
+      Object.keys(props).forEach(function(k) {
+        if (k === 'style') {
+          node.style.cssText = props[k];
+        } else {
+          node.setAttribute(k, props[k]);
+        }
+      });
     }
-    return streak;
+    if (children) {
+      children.forEach(function(child) {
+        if (typeof child === 'string') {
+          node.appendChild(document.createTextNode(child));
+        } else if (child) {
+          node.appendChild(child);
+        }
+      });
+    }
+    return node;
+  }
+
+  // Construit la carte d un objectif 
+  function buildCard(g) {
+    var checkbox = el('input', {
+      class: 'toggle',
+      type: 'checkbox',
+      'aria-label': "Marquer '" + g.title + "' comme fait"
+    });
+    if (g.checkedToday) checkbox.checked = true;
+
+    var iconSpan  = el('span', { style: 'font-size:1.2rem' }, [g.icon]);
+    var titleEl   = el('strong', {}, [g.title]);
+    var leftDiv   = el('div', { style: 'display:flex;align-items:center;gap:.6rem;' }, [checkbox, iconSpan, titleEl]);
+
+    var delBtn    = el('button', {
+      type: 'button',
+      class: 'btn ghost del',
+      'aria-label': "Supprimer l'objectif"
+    }, ['🗑️']);
+    var rightDiv  = el('div', { style: 'display:flex;gap:.4rem' }, [delBtn]);
+
+    var row       = el('div', { class: 'row' }, [leftDiv, rightDiv]);
+    var streak    = el('div', { class: 'muted', 'aria-label': 'Série de jours consécutifs' }, ['🔥 ' + g.streak]);
+
+    var article   = el('article', {
+      class: 'card',
+      'data-id': String(g.id),
+      role: 'listitem'
+    }, [row, streak]);
+
+    return article;
   }
 
   ns.render = function(){
-    var goals = ns.storage.get(ns.K_GOALS, []);
-    var logs  = ns.storage.get(ns.K_LOGS,  {});
-    var today = ns.todayISO();
-    var todaySet = new Set(logs[today] || []);
+    ns.api.getGoals()
+      .then(function(goals){
+        var checkedCount = goals.filter(function(g){ return g.checkedToday; }).length;
 
-    if ($goals) {
-      if (!goals.length) {
-        $goals.innerHTML = '<div class="card"><p class="muted">Ajoute ton premier objectif ✨</p></div>';
-      } else {
-        var html = '';
-        for (var i=0;i<goals.length;i++){
-          var g = goals[i];
-          var checked = todaySet.has(g.id) ? 'checked' : '';
-          var streak  = computeStreak(g.id, logs);
-          html += ''
-            + '<article class="card" data-id="'+g.id+'" role="listitem">'
-            + '  <div class="row">'
-            + '    <div style="display:flex;align-items:center;gap:.6rem;">'
-            + '      <input class="toggle" type="checkbox" '+checked+' aria-label="Marquer \''+(g.title)+'\' comme fait">'
-            + '      <span style="font-size:1.2rem">'+g.icon+'</span>'
-            + '      <strong>'+g.title+'</strong>'
-            + '    </div>'
-            + '    <div style="display:flex;gap:.4rem">'
-            + '      <button type="button" class="btn ghost del" aria-label="Supprimer l’objectif">🗑️</button>'
-            + '    </div>'
-            + '  </div>'
-            + '  <div class="muted" aria-label="Série de jours consécutifs">🔥 '+streak+'</div>'
-            + '</article>';
+        if ($goals) {
+          // Vide le conteneur proprement
+          while ($goals.firstChild) $goals.removeChild($goals.firstChild);
+
+          if (!goals.length) {
+            var emptyCard = el('div', { class: 'card' }, [
+              el('p', { class: 'muted' }, ['Ajoute ton premier objectif ✨'])
+            ]);
+            $goals.appendChild(emptyCard);
+          } else {
+            goals.forEach(function(g) {
+              $goals.appendChild(buildCard(g));
+            });
+          }
         }
-        $goals.innerHTML = html;
-      }
-    }
 
-    var percent = goals.length ? Math.round((todaySet.size / goals.length) * 100) : 0;
-    if ($bar)    $bar.style.width = percent + '%';
-    if ($garden) {
-      var plant = percent===100 ? '🌳' : percent>=75 ? '🌸' : percent>=50 ? '🌷' : percent>=25 ? '🌿' : '🌱';
-      $garden.textContent = plant + ' ' + percent + '%';
-    }
-
-    if ($badge) {
-      if (percent === 100) $badge.textContent = '🏅 Tout est fait aujourd’hui !';
-      else {
-        var has7 = goals.some(function(g){ return computeStreak(g.id, logs) >= 7; });
-        $badge.textContent = has7 ? '🏅 Badge “Constante” : 7 jours !' : 'Aucun badge pour l’instant.';
-      }
-    }
+        var percent = goals.length ? Math.round((checkedCount / goals.length) * 100) : 0;
+        if ($bar)    $bar.style.width = percent + '%';
+        if ($garden) {
+          var plant = percent === 100 ? '🌳' : percent >= 75 ? '🌸' : percent >= 50 ? '🌷' : percent >= 25 ? '🌿' : '🌱';
+          $garden.textContent = plant + ' ' + percent + '%';
+        }
+        if ($badge) {
+          if (percent === 100) {
+            $badge.textContent = '🏅 Tout est fait aujourd\'hui !';
+          } else {
+            var has7 = goals.some(function(g){ return g.streak >= 7; });
+            $badge.textContent = has7 ? '🏅 Badge "Constance" : 7 jours !' : 'Aucun badge pour l\'instant.';
+          }
+        }
+      })
+      .catch(function(){
+        if ($goals) {
+          while ($goals.firstChild) $goals.removeChild($goals.firstChild);
+          $goals.appendChild(
+            el('div', { class: 'card' }, [
+              el('p', { class: 'muted' }, ['Impossible de joindre le serveur 😕'])
+            ])
+          );
+        }
+      });
   };
 })(window.Bloom);

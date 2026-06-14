@@ -1,0 +1,60 @@
+services:
+
+  frontend:
+    build: .
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+    restart: unless-stopped
+
+  db:
+    image: mysql:8
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE:      ${MYSQL_DATABASE}
+      MYSQL_USER:          ${MYSQL_USER}
+      MYSQL_PASSWORD:      ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/script.sql:/docker-entrypoint-initdb.d/script.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    ports:
+      - "9090:80"
+    environment:
+      PMA_HOST: db
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  mongo_data:
