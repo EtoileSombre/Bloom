@@ -1,0 +1,16 @@
+{
+  "name": "bloom-api",
+  "version": "1.0.0",
+  "description": "API REST Bloom",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.0",
+    "helmet": "^7.1.0",
+    "mongoose": "^8.0.0",
+    "mysql2": "^3.6.0"
+  }
+}
