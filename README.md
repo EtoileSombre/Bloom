@@ -31,15 +31,24 @@ Bloom permet de suivre ses habitudes quotidiennes et de visualiser sa progressio
 - **MySQL 8** : Base de données relationnelle
 - **phpMyAdmin** : Interface d'administration
 
+**Sécurité**
+- **helmet** : Headers HTTP sécurisés (CSP, X-Frame-Options, HSTS...)
+- **express-rate-limit** : Protection anti brute-force (200 req/15 min)
+- **Requêtes paramétrées** : Protection anti-injection SQL
+- **createTextNode()** : Protection anti-XSS côté front (zéro `innerHTML`)
+- **.env** : Secrets hors du code source
+
 **Infrastructure**
-- **Docker / Docker Compose** : Conteneurisation et orchestration des 4 services
+- **Docker / Docker Compose** : Conteneurisation et orchestration des 5 services
 
 ## Architecture
 
 ```
 Browser → :8080 (Nginx)
               ├── /        → fichiers statiques (HTML/CSS/JS)
-              └── /api/    → :3000 (Express + MySQL)
+              └── /api/    → :3000 (Express)
+                                ├── MySQL  → goals, daily_checks, badges
+                                └── MongoDB → logs (journal NoSQL)
 ```
 
 ### Structure du projet
@@ -105,12 +114,16 @@ Bloom/
 > Prérequis : [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ```bash
-# Cloner le repository
+# 1. Cloner le repository
 git clone <url-du-repo>
 cd Bloom
 
-# Lancer tous les services
-docker compose up -d
+# 2. Configurer les variables d'environnement
+copy .env.example .env
+# Editez .env avec vos propres mots de passe
+
+# 3. Lancer tous les services
+docker compose up -d --build
 ```
 
 | Service | URL |
@@ -137,9 +150,10 @@ docker compose up -d --build
 
 ### Activité Type 1 — Front-end
 
-- ✅ **Configurer l'environnement** : Docker Compose orchestre tout l'environnement de travail
+- ✅ **Configurer l'environnement** : Docker Compose, Nginx, `.env`, `.dockerignore`
+- ⚠️ **Maquetter les interfaces** : à compléter (wireframes / Figma)
 - ✅ **Interfaces statiques** : HTML5 sémantique + CSS3 responsive (variables, animations)
-- ✅ **Interfaces dynamiques** : JavaScript Vanilla, fetch API, mise à jour du DOM asynchrone
+- ✅ **Interfaces dynamiques** : JS Vanilla, fetch API, DOM API (`createTextNode`, zéro `innerHTML`)
 
 ### Activité Type 2 — Back-end
 
@@ -220,13 +234,18 @@ docker compose up -d --build
 docker exec -it bloom-db-1 mysql -ubloom -pbloompassword bloom
 ```
 
-### Variables d'environnement (backend)
+### Variables d'environnement
 
-| Variable | Valeur par défaut | Description |
-|---|---|---|
-| `DB_HOST` | `db` | Hôte MySQL |
-| `DB_USER` | `bloom` | Utilisateur MySQL |
-| `DB_PASSWORD` | `bloompassword` | Mot de passe MySQL |
-| `DB_NAME` | `bloom` | Nom de la base MySQL |
-| `MONGO_URI` | `mongodb://mongo:27017/bloom_logs` | URI MongoDB |
-| `PORT` | `3000` | Port de l'API |
+Copier `.env.example` en `.env` et renseigner les valeurs :
+
+| Variable | Description |
+|---|---|
+| `MYSQL_ROOT_PASSWORD` | Mot de passe root MySQL |
+| `MYSQL_DATABASE` | Nom de la base MySQL |
+| `MYSQL_USER` | Utilisateur MySQL |
+| `MYSQL_PASSWORD` | Mot de passe MySQL |
+| `DB_HOST` | Hôte MySQL (= `db` dans Docker) |
+| `MONGO_URI` | URI MongoDB |
+| `PORT` | Port de l'API (défaut `3000`) |
+
+> ⚠️ Ne jamais commiter `.env` — il est dans `.gitignore`
