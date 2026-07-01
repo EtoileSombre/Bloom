@@ -1,13 +1,13 @@
-﻿// render.js 
+﻿// render.js — construction du DOM sans innerHTML (anti-XSS)
 (function(ns){
   var $goals  = ns.$('#goals');
   var $garden = ns.$('#gardenView');
   var $bar    = ns.$('#progressBar');
   var $badge  = ns.$('#badgeInfo');
 
-  // Cree un element DOM avec des proprietes
+  // Fabrique un élément DOM — toute chaîne est insérée via createTextNode (anti-XSS)
   function el(tag, props, children) {
-    var node = document.createElement(tag);
+    var node = document.createElement(tag);          // ← createElement
     if (props) {
       Object.keys(props).forEach(function(k) {
         if (k === 'style') {
@@ -20,7 +20,7 @@
     if (children) {
       children.forEach(function(child) {
         if (typeof child === 'string') {
-          node.appendChild(document.createTextNode(child));
+          node.appendChild(document.createTextNode(child)); // ← createTextNode (jamais innerHTML)
         } else if (child) {
           node.appendChild(child);
         }
@@ -92,8 +92,15 @@
           if (percent === 100) {
             $badge.textContent = '🏅 Tout est fait aujourd\'hui !';
           } else {
-            var has7 = goals.some(function(g){ return g.streak >= 7; });
-            $badge.textContent = has7 ? '🏅 Badge "Constance" : 7 jours !' : 'Aucun badge pour l\'instant.';
+            // Badges de constance — seuil le plus élevé atteint parmi tous les objectifs
+            var maxStreak = goals.reduce(function(max, g){ return g.streak > max ? g.streak : max; }, 0);
+            var badge =
+              maxStreak >= 30 ? '🏆 Badge "Champion" : 30 jours !'  :
+              maxStreak >= 14 ? '🥇 Badge "Régularité" : 14 jours !' :
+              maxStreak >= 7  ? '🥈 Badge "Constance" : 7 jours !'  :
+              maxStreak >= 3  ? '🥉 Badge "Départ" : 3 jours !'     :
+              'Aucun badge pour l\'instant.';
+            $badge.textContent = badge;
           }
         }
       })
